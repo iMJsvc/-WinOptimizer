@@ -5,9 +5,12 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Windows.Forms
 
+$ns1 = "http://" + "://microsoft.com"
+$ns2 = "http://" + "://microsoft.com"
+
 [xml]$xaml = @"
-<Window xmlns="http://microsoft.com"
-        xmlns:x="http://microsoft.com"
+<Window xmlns="$ns1"
+        xmlns:x="$ns2"
         Title="Pro Windows Optimizer &amp; App Installer v1.0" Height="740" Width="1020"
         WindowStartupLocation="CenterScreen" Background="#121418" Foreground="#EAEAEA" FontFamily="Segoe UI">
     <Window.Resources>
@@ -149,7 +152,6 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
                     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
 </Grid.ColumnDefinitions>
 "@
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
