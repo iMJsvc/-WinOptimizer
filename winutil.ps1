@@ -174,6 +174,7 @@ New-AppCheck $PanelTools "voidtools.Everything" "Everything File Search" | Out-N
 New-AppCheck $PanelTools "Notepad++.Notepad++" "Notepad++" | Out-Null
 New-AppCheck $PanelTools "Microsoft.VisualStudioCode" "Visual Studio Code" | Out-Null
 New-AppCheck $PanelTools "Git.Git" "Git for Windows" | Out-Null
+New-AppCheck $PanelTools "WiseCleaner.WiseProgramUninstaller" "Wise Program Uninstaller" | Out-Null
 
 $sv1.Content = $colsGrid1
 $g1.Children.Add($sv1) | Out-Null
