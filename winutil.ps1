@@ -179,8 +179,8 @@ return $true
 Write-Log "WARNING: WinGet is missing on your PC. Installing WinGet dependencies first..."
 try {
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$vclibsUrl = "aka.ms"
-$wingetUrl = "github.com"
+$vclibsUrl = "https://" + "aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+$wingetUrl = "https://" + "github.com"
 $vclibsPath = "$env:TEMP\VCLibs.appx"
 $wingetPath = "$env:TEMP\WinGet.msixbundle"
 Write-Log "Downloading Microsoft VCLibs dependency..."
