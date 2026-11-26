@@ -10,7 +10,7 @@ function New-Brush($hex) {
 }
 
 $win = New-Object System.Windows.Window
-$win.Title = "Pro Windows Optimizer & App Installer v1.0"
+$win.Title = "Pro Windows Optimizer & App Installer v1.1"
 $win.Width = 1020
 $win.Height = 730
 $win.WindowStartupLocation = "CenterScreen"
@@ -266,8 +266,14 @@ $parent.Children.Add($row) | Out-Null
 return @($b1, $b2)
 }
 $ultBtns = Add-PowerRow $PanelPower "1. Ultimate Performance Plan (Best for Desktop/Gaming)" "#16A34A"
+$BtnUltEnable = $ultBtns | Select-Object -First 1
+$BtnUltDisable = $ultBtns | Select-Object -Last 1
 $highBtns = Add-PowerRow $PanelPower "2. High Performance Plan" "#0284C7"
+$BtnHighEnable = $highBtns | Select-Object -First 1
+$BtnHighDisable = $highBtns | Select-Object -Last 1
 $balBtns = Add-PowerRow $PanelPower "3. Balanced Power Plan (Recommended for Laptops)" "#0D9488"
+$BtnBalEnable = $balBtns | Select-Object -First 1
+$BtnBalDisable = $balBtns | Select-Object -Last 1
 $PanelMaint = New-CardPanel $g3 1 "System Maintenance & Quick Fixes" "#F59E0B"
 $BtnCleanTemp = New-StyledButton "Clean Temporary & Prefetch Files" "#334155"; $BtnCleanTemp.Margin = "0,6,0,10"
 $BtnRestartExplorer = New-StyledButton "Restart Windows Explorer (Apply UI Tweaks)" "#334155"; $BtnRestartExplorer.Margin = "0,0,0,10"
@@ -314,7 +320,8 @@ $mainGrid.Children.Add($logBorder) | Out-Null
 $win.Content = $mainGrid
 function Write-Log([string]$Message) {
 $ts = (Get-Date).ToString("HH:mm:ss")
-$TxtLog.AppendText("[$ts] $Messagern")
+$nl = [Environment]::NewLine
+$TxtLog.AppendText("[$ts] $Message$nl")
 $TxtLog.ScrollToEnd()
 [System.Windows.Forms.Application]::DoEvents() | Out-Null
 }
@@ -375,7 +382,7 @@ $selectedApps = @()
 foreach ($p in @($PanelDotNet, $PanelBrowsers, $PanelTools)) {
 foreach ($cb in $p.Children) {
 if ($cb -is [System.Windows.Controls.CheckBox] -and $cb.IsChecked) {
-$selectedApps += [PSCustomObject]@{ Name = $cb.Content; Id = $cb.Tag }
+$selectedApps += [PSCustomObject]@{ Name = $cb.Content; Id = [string]$cb.Tag }
 }
 }
 }
@@ -404,7 +411,8 @@ return
 }
 foreach ($app in $normalApps) {
 Write-Log "Downloading & Installing: $($app.Name) ($($app.Id))..."
-$proc = Start-Process -FilePath "winget" -ArgumentList "install --id "$($app.Id)" --exact --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru -NoNewWindow
+$wgArgs = @("install", "--id", $app.Id, "--exact", "--silent", "--accept-source-agreements", "--accept-package-agreements")
+$proc = Start-Process -FilePath "winget" -ArgumentList $wgArgs -Wait -PassThru -NoNewWindow
 switch ($proc.ExitCode) {
 0 { Write-Log "SUCCESS: $($app.Name) installed successfully." }
 -1978335189 { Write-Log "INFO: $($app.Name) is already installed and up to date." }
@@ -506,33 +514,39 @@ if ($ChkWidgets.IsChecked) { Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\
 if ($ChkFileExt.IsChecked) { Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "HideFileExt" 1 "DWord" }
 Write-Log "SUCCESS: Selected tweaks restored to Windows defaults."
 })
-$ultBtns[0].Add_Click({
+$BtnUltEnable.Add_Click({
 powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 | Out-Null
-$guid = (powercfg -list | Select-String "Ultimate Performance").ToString().Split()[3]
+$line = (powercfg -list | Select-String "Ultimate Performance") | Select-Object -First 1
+if ($line) {
+$guid = [regex]::Match($line.ToString(), '[a-f0-9-]{36}').Value
 if ($guid) { powercfg -setactive $guid; Write-Log "SUCCESS: Ultimate Performance Power Plan enabled & activated." }
+}
 })
-$ultBtns[1].Add_Click({
+$BtnUltDisable.Add_Click({
 powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
 $schemes = powercfg -list | Select-String "Ultimate Performance"
-foreach ($s in $schemes) { $g = $s.ToString().Split()[3]; powercfg -delete $g }
+foreach ($s in $schemes) {
+$g = [regex]::Match($s.ToString(), '[a-f0-9-]{36}').Value
+if ($g) { powercfg -delete $g }
+}
 Write-Log "SUCCESS: Ultimate Performance Plan disabled & removed (Switched to Balanced)."
 })
-$highBtns[0].Add_Click({
+$BtnHighEnable.Add_Click({
 powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c | Out-Null
 powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
 Write-Log "SUCCESS: High Performance Power Plan enabled & activated."
 })
-$highBtns[1].Add_Click({
+$BtnHighDisable.Add_Click({
 powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
 powercfg -delete 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
 Write-Log "SUCCESS: High Performance Plan disabled."
 })
-$balBtns[0].Add_Click({
+$BtnBalEnable.Add_Click({
 powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e | Out-Null
 powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
 Write-Log "SUCCESS: Balanced Power Plan enabled & activated."
 })
-$balBtns[1].Add_Click({
+$BtnBalDisable.Add_Click({
 powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
 powercfg -delete 381b4222-f694-41f0-9685-ff5bb260df2e 2>$null
 Write-Log "SUCCESS: Balanced Power Plan disabled."
