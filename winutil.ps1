@@ -5,171 +5,335 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Windows.Forms
 
-$ns1 = "http://" + "://microsoft.com"
-$ns2 = "http://" + "://microsoft.com"
+function New-Brush($hex) {
+    return (New-Object System.Windows.Media.BrushConverter).ConvertFromString($hex)
+}
 
-[xml]$xaml = @"
-<Window xmlns="$ns1"
-        xmlns:x="$ns2"
-        Title="Pro Windows Optimizer &amp; App Installer v1.0" Height="740" Width="1020"
-        WindowStartupLocation="CenterScreen" Background="#121418" Foreground="#EAEAEA" FontFamily="Segoe UI">
-    <Window.Resources>
-        <Style TargetType="TabItem">
-            <Setter Property="Background" Value="#1E222A"/>
-            <Setter Property="Foreground" Value="#B0B8C4"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="18,10"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TabItem">
-                        <Border Name="Border" Background="#1E222A" BorderBrush="#2D333F" BorderThickness="1,1,1,0" CornerRadius="6,6,0,0" Margin="2,0">
-                            <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" Margin="16,8"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="#0078D4"/>
-                                <Setter Property="Foreground" Value="White"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="CheckBox">
-            <Setter Property="Foreground" Value="#E2E8F0"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Margin" Value="0,4"/>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
-        <Style TargetType="Button">
-            <Setter Property="Background" Value="#0078D4"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Padding" Value="14,8"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
-    </Window.Resources>
+$win = New-Object System.Windows.Window
+$win.Title = "Pro Windows Optimizer & App Installer v1.0"
+$win.Width = 1020
+$win.Height = 730
+$win.WindowStartupLocation = "CenterScreen"
+$win.Background = New-Brush "#121418"
+$win.Foreground = New-Brush "#EAEAEA"
+$win.FontFamily = New-Object System.Windows.Media.FontFamily("Segoe UI")
 
-    <Grid Margin="15">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="155"/>
-        </Grid.RowDefinitions>
+$mainGrid = New-Object System.Windows.Controls.Grid
+$mainGrid.Margin = "15"
+$r0 = New-Object System.Windows.Controls.RowDefinition; $r0.Height = "Auto"
+$r1 = New-Object System.Windows.Controls.RowDefinition; $r1.Height = "*"
+$r2 = New-Object System.Windows.Controls.RowDefinition; $r2.Height = "155"
+$mainGrid.RowDefinitions.Add($r0)
+$mainGrid.RowDefinitions.Add($r1)
+$mainGrid.RowDefinitions.Add($r2)
 
-        <Border Grid.Row="0" Background="#1A1D24" CornerRadius="8" Padding="15" Margin="0,0,0,12" BorderBrush="#2A2F3A" BorderThickness="1">
-            <DockPanel>
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Text="PRO WINDOWS OPTIMIZER &amp; SMART INSTALLER" FontSize="20" FontWeight="Bold" Foreground="#38BDF8"/>
-                    <TextBlock Text="All-in-One Gaming Tweaks, Power Plans, .NET Runtimes &amp; Automated Software Setup" FontSize="12" Foreground="#94A3B8" Margin="0,2,0,0"/>
-                </StackPanel>
-                <Button Name="BtnCreateRestore" Content="Create Restore Point" HorizontalAlignment="Right" Background="#10B981" Padding="14,8"/>
-            </DockPanel>
-        </Border>
+# HEADER
+$headerBorder = New-Object System.Windows.Controls.Border
+$headerBorder.Background = New-Brush "#1A1D24"
+$headerBorder.CornerRadius = "8"
+$headerBorder.Padding = "15"
+$headerBorder.Margin = "0,0,0,12"
+$headerBorder.BorderBrush = New-Brush "#2A2F3A"
+$headerBorder.BorderThickness = "1"
+[System.Windows.Controls.Grid]::SetRow($headerBorder, 0)
 
-        <TabControl Grid.Row="1" Background="#181B22" BorderBrush="#2D333F" BorderThickness="1">
-            <TabItem Header="Install Apps &amp; .NET">
-                <Grid Margin="12">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+$dock = New-Object System.Windows.Controls.DockPanel
+$titleStack = New-Object System.Windows.Controls.StackPanel
+$t1 = New-Object System.Windows.Controls.TextBlock
+$t1.Text = "PRO WINDOWS OPTIMIZER & SMART INSTALLER"
+$t1.FontSize = 20
+$t1.FontWeight = "Bold"
+$t1.Foreground = New-Brush "#38BDF8"
+$t2 = New-Object System.Windows.Controls.TextBlock
+$t2.Text = "All-in-One Gaming Tweaks, Power Plans, .NET Runtimes & Automated Software Setup"
+$t2.FontSize = 12
+$t2.Foreground = New-Brush "#94A3B8"
+$titleStack.Children.Add($t1) | Out-Null
+$titleStack.Children.Add($t2) | Out-Null
 
-                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+$BtnCreateRestore = New-Object System.Windows.Controls.Button
+$BtnCreateRestore.Content = "Create Restore Point"
+$BtnCreateRestore.HorizontalAlignment = "Right"
+$BtnCreateRestore.Background = New-Brush "#10B981"
+$BtnCreateRestore.Foreground = New-Brush "#FFFFFF"
+$BtnCreateRestore.FontWeight = "SemiBold"
+$BtnCreateRestore.Padding = "14,8"
+$BtnCreateRestore.BorderThickness = "0"
 
-                            <Border Grid.Column="0" Background="#1E222B" CornerRadius="6" Padding="12" Margin="0,0,6,0">
-                                <StackPanel Name="PanelDotNet">
-                                    <TextBlock Text=".NET Framework &amp; Runtimes" FontSize="15" FontWeight="Bold" Foreground="#38BDF8" Margin="0,0,0,8"/>
-                                    <CheckBox Tag="DOTNET35" Content=".NET Framework 3.5 (Includes 2.0 &amp; 3.0)"/>
-                                    <CheckBox Tag="Microsoft.DotNet.Framework.DeveloperPack_4" Content=".NET Framework 4.8 Developer Pack"/>
-                                    <CheckBox Tag="Microsoft.DotNet.DesktopRuntime.5" Content=".NET 5.0 Desktop Runtime"/>
-                                    <CheckBox Tag="Microsoft.DotNet.DesktopRuntime.6" Content=".NET 6.0 Desktop Runtime"/>
-                                    <CheckBox Tag="Microsoft.DotNet.DesktopRuntime.7" Content=".NET 7.0 Desktop Runtime"/>
-                                    <CheckBox Tag="Microsoft.DotNet.DesktopRuntime.8" Content=".NET 8.0 Desktop Runtime (LTS)"/>
-                                    <CheckBox Tag="Microsoft.DotNet.DesktopRuntime.9" Content=".NET 9.0 Desktop Runtime"/>
-                                    <CheckBox Tag="Microsoft.VCRedist.2015+.x64" Content="Visual C++ 2015-2022 Redist (x64)"/>
-                                    <CheckBox Tag="Microsoft.VCRedist.2015+.x86" Content="Visual C++ 2015-2022 Redist (x86)"/>
-                                    <CheckBox Tag="Microsoft.DirectX" Content="DirectX End-User Runtime"/>
-                                </StackPanel>
-                            </Border>
+$dock.Children.Add($titleStack) | Out-Null
+$dock.Children.Add($BtnCreateRestore) | Out-Null
+$headerBorder.Child = $dock
+$mainGrid.Children.Add($headerBorder) | Out-Null
 
-                            <Border Grid.Column="1" Background="#1E222B" CornerRadius="6" Padding="12" Margin="6,0">
-                                <StackPanel Name="PanelBrowsers">
-                                    <TextBlock Text="Browsers &amp; Social" FontSize="15" FontWeight="Bold" Foreground="#A78BFA" Margin="0,0,0,8"/>
-                                    <CheckBox Tag="Google.Chrome" Content="Google Chrome"/>
-                                    <CheckBox Tag="Brave.Brave" Content="Brave Browser"/>
-                                    <CheckBox Tag="Mozilla.Firefox" Content="Mozilla Firefox"/>
-                                    <CheckBox Tag="Zen-Team.Zen-Browser" Content="Zen Browser"/>
-                                    <CheckBox Tag="LibreWolf.LibreWolf" Content="LibreWolf (Privacy)"/>
-                                    <CheckBox Tag="Discord.Discord" Content="Discord"/>
-                                    <CheckBox Tag="Telegram.TelegramDesktop" Content="Telegram Desktop"/>
-                                    <CheckBox Tag="9NKSQGP7F2NH" Content="WhatsApp Desktop"/>
-                                </StackPanel>
-                            </Border>
+# TAB CONTROL
+$tabs = New-Object System.Windows.Controls.TabControl
+$tabs.Background = New-Brush "#181B22"
+$tabs.BorderBrush = New-Brush "#2D333F"
+$tabs.BorderThickness = "1"
+[System.Windows.Controls.Grid]::SetRow($tabs, 1)
 
-                            <Border Grid.Column="2" Background="#1E222B" CornerRadius="6" Padding="12" Margin="6,0,0,0">
-                                <StackPanel Name="PanelTools">
-                                    <TextBlock Text="Gaming &amp; Utilities" FontSize="15" FontWeight="Bold" Foreground="#34D399" Margin="0,0,0,8"/>
-                                    <CheckBox Tag="Valve.Steam" Content="Steam"/>
-                                    <CheckBox Tag="EpicGames.EpicGamesLauncher" Content="Epic Games Launcher"/>
-                                    <CheckBox Tag="VideoLAN.VLC" Content="VLC Media Player"/>
-                                    <CheckBox Tag="7zip.7zip" Content="7-Zip Archiver"/>
-                                    <CheckBox Tag="RARLab.WinRAR" Content="WinRAR"/>
-                                    <CheckBox Tag="OBSProject.OBSStudio" Content="OBS Studio"/>
-                                    <CheckBox Tag="voidtools.Everything" Content="Everything File Search"/>
-                                    <CheckBox Tag="Notepad++.Notepad++" Content="Notepad++"/>
-                                    <CheckBox Tag="Microsoft.VisualStudioCode" Content="Visual Studio Code"/>
-                                    <CheckBox Tag="Git.Git" Content="Git for Windows"/>
-                                </StackPanel>
-                            </Border>
-                        </Grid>
-                    </ScrollViewer>
+function New-StyledButton($text, $bgHex) {
+    $b = New-Object System.Windows.Controls.Button
+    $b.Content = $text
+    $b.Background = New-Brush $bgHex
+    $b.Foreground = New-Brush "#FFFFFF"
+    $b.FontWeight = "SemiBold"
+    $b.FontSize = 13
+    $b.Padding = "14,8"
+    $b.BorderThickness = "0"
+    $b.Margin = "0,0,8,0"
+    return $b
+}
 
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
-                        <Button Name="BtnSelectAllDotNet" Content="Select All .NET &amp; Runtimes" Background="#334155" Margin="0,0,10,0"/>
-                        <Button Name="BtnClearApps" Content="Clear Selection" Background="#475569" Margin="0,0,10,0"/>
-                        <Button Name="BtnInstallApps" Content="Install Selected Applications" Background="#0284C7" Padding="20,9"/>
-                    </StackPanel>
-                </Grid>
-            </TabItem>
+function New-AppCheck($panel, $tag, $label) {
+    $cb = New-Object System.Windows.Controls.CheckBox
+    $cb.Tag = $tag
+    $cb.Content = $label
+    $cb.Foreground = New-Brush "#E2E8F0"
+    $cb.FontSize = 13
+    $cb.Margin = "0,4"
+    $panel.Children.Add($cb) | Out-Null
+    return $cb
+}
 
-            <TabItem Header="Gaming &amp; System Tweaks">
-                <Grid Margin="12">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+function New-TweakCheck($panel, $label) {
+    $cb = New-Object System.Windows.Controls.CheckBox
+    $cb.Content = $label
+    $cb.Foreground = New-Brush "#E2E8F0"
+    $cb.FontSize = 13
+    $cb.Margin = "0,4"
+    $panel.Children.Add($cb) | Out-Null
+    return $cb
+}
 
-                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-</Grid.ColumnDefinitions>
-"@
-$reader = (New-Object System.Xml.XmlNodeReader $xaml)
-$window = [Windows.Markup.XamlReader]::Load($reader)
-$TxtLog = $window.FindName("TxtLog")
-function Write-Log {
-param([string]$Message)
-$timestamp = (Get-Date).ToString("HH:mm:ss")
-$TxtLog.AppendText("[$timestamp] $Messagern")
+# ==================== TAB 1: APPS & .NET ====================
+$tab1 = New-Object System.Windows.Controls.TabItem
+$tab1.Header = "  Install Apps & .NET  "
+$g1 = New-Object System.Windows.Controls.Grid; $g1.Margin = "12"
+$g1r0 = New-Object System.Windows.Controls.RowDefinition; $g1r0.Height = "*"
+$g1r1 = New-Object System.Windows.Controls.RowDefinition; $g1r1.Height = "Auto"
+$g1.RowDefinitions.Add($g1r0); $g1.RowDefinitions.Add($g1r1)
+
+$sv1 = New-Object System.Windows.Controls.ScrollViewer
+$sv1.VerticalScrollBarVisibility = "Auto"
+[System.Windows.Controls.Grid]::SetRow($sv1, 0)
+
+$colsGrid1 = New-Object System.Windows.Controls.Grid
+for ($i=0; $i -lt 3; $i++) {
+    $cd = New-Object System.Windows.Controls.ColumnDefinition; $cd.Width = "*"
+    $colsGrid1.ColumnDefinitions.Add($cd)
+}
+
+function New-CardPanel($parentGrid, $colIdx, $heading, $colorHex) {
+    $b = New-Object System.Windows.Controls.Border
+    $b.Background = New-Brush "#1E222B"
+    $b.CornerRadius = "6"
+    $b.Padding = "12"
+    $b.Margin = "4"
+    [System.Windows.Controls.Grid]::SetColumn($b, $colIdx)
+    $sp = New-Object System.Windows.Controls.StackPanel
+    $lbl = New-Object System.Windows.Controls.TextBlock
+    $lbl.Text = $heading
+    $lbl.FontSize = 15
+    $lbl.FontWeight = "Bold"
+    $lbl.Foreground = New-Brush $colorHex
+    $lbl.Margin = "0,0,0,8"
+    $sp.Children.Add($lbl) | Out-Null
+    $b.Child = $sp
+    $parentGrid.Children.Add($b) | Out-Null
+    return $sp
+}
+
+$PanelDotNet = New-CardPanel $colsGrid1 0 ".NET Framework & Runtimes" "#38BDF8"
+New-AppCheck $PanelDotNet "DOTNET35" ".NET Framework 3.5 (Includes 2.0 & 3.0)" | Out-Null
+New-AppCheck $PanelDotNet "Microsoft.DotNet.Framework.DeveloperPack_4" ".NET Framework 4.8 Developer Pack" | Out-Null
+New-AppCheck $PanelDotNet "Microsoft.DotNet.DesktopRuntime.5" ".NET 5.0 Desktop Runtime" | Out-Null
+New-AppCheck $PanelDotNet "Microsoft.DotNet.DesktopRuntime.6" ".NET 6.0 Desktop Runtime" | Out-Null
+New-AppCheck $PanelDotNet "Microsoft.DotNet.DesktopRuntime.7" ".NET 7.0 Desktop Runtime" | Out-Null
+New-AppCheck $PanelDotNet "Microsoft.DotNet.DesktopRuntime.8" ".NET 8.0 Desktop Runtime (LTS)" | Out-Null
+New-AppCheck $PanelDotNet "Microsoft.DotNet.DesktopRuntime.9" ".NET 9.0 Desktop Runtime" | Out-Null
+New-AppCheck $PanelDotNet "Microsoft.VCRedist.2015+.x64" "Visual C++ 2015-2022 Redist (x64)" | Out-Null
+New-AppCheck $PanelDotNet "Microsoft.VCRedist.2015+.x86" "Visual C++ 2015-2022 Redist (x86)" | Out-Null
+New-AppCheck $PanelDotNet "Microsoft.DirectX" "DirectX End-User Runtime" | Out-Null
+
+$PanelBrowsers = New-CardPanel $colsGrid1 1 "Browsers & Communication" "#A78BFA"
+New-AppCheck $PanelBrowsers "Google.Chrome" "Google Chrome" | Out-Null
+New-AppCheck $PanelBrowsers "Brave.Brave" "Brave Browser" | Out-Null
+New-AppCheck $PanelBrowsers "Mozilla.Firefox" "Mozilla Firefox" | Out-Null
+New-AppCheck $PanelBrowsers "Zen-Team.Zen-Browser" "Zen Browser" | Out-Null
+New-AppCheck $PanelBrowsers "LibreWolf.LibreWolf" "LibreWolf (Privacy)" | Out-Null
+New-AppCheck $PanelBrowsers "Discord.Discord" "Discord" | Out-Null
+New-AppCheck $PanelBrowsers "Telegram.TelegramDesktop" "Telegram Desktop" | Out-Null
+New-AppCheck $PanelBrowsers "9NKSQGP7F2NH" "WhatsApp Desktop" | Out-Null
+
+$PanelTools = New-CardPanel $colsGrid1 2 "Gaming & Essential Utilities" "#34D399"
+New-AppCheck $PanelTools "Valve.Steam" "Steam" | Out-Null
+New-AppCheck $PanelTools "EpicGames.EpicGamesLauncher" "Epic Games Launcher" | Out-Null
+New-AppCheck $PanelTools "VideoLAN.VLC" "VLC Media Player" | Out-Null
+New-AppCheck $PanelTools "7zip.7zip" "7-Zip Archiver" | Out-Null
+New-AppCheck $PanelTools "RARLab.WinRAR" "WinRAR" | Out-Null
+New-AppCheck $PanelTools "OBSProject.OBSStudio" "OBS Studio" | Out-Null
+New-AppCheck $PanelTools "voidtools.Everything" "Everything File Search" | Out-Null
+New-AppCheck $PanelTools "Notepad++.Notepad++" "Notepad++" | Out-Null
+New-AppCheck $PanelTools "Microsoft.VisualStudioCode" "Visual Studio Code" | Out-Null
+New-AppCheck $PanelTools "Git.Git" "Git for Windows" | Out-Null
+
+$sv1.Content = $colsGrid1
+$g1.Children.Add($sv1) | Out-Null
+
+$btnBar1 = New-Object System.Windows.Controls.StackPanel
+$btnBar1.Orientation = "Horizontal"
+$btnBar1.HorizontalAlignment = "Right"
+$btnBar1.Margin = "0,10,0,0"
+[System.Windows.Controls.Grid]::SetRow($btnBar1, 1)
+
+$BtnSelectAllDotNet = New-StyledButton "Select All .NET & Runtimes" "#334155"
+$BtnClearApps = New-StyledButton "Clear Selection" "#475569"
+$BtnInstallApps = New-StyledButton "Install Selected Applications" "#0284C7"
+$btnBar1.Children.Add($BtnSelectAllDotNet) | Out-Null
+$btnBar1.Children.Add($BtnClearApps) | Out-Null
+$btnBar1.Children.Add($BtnInstallApps) | Out-Null
+$g1.Children.Add($btnBar1) | Out-Null
+$tab1.Content = $g1
+$tabs.Items.Add($tab1) | Out-Null
+
+# ==================== TAB 2: GAMING & SYSTEM TWEAKS ====================
+$tab2 = New-Object System.Windows.Controls.TabItem
+$tab2.Header = "  Gaming & System Tweaks  "
+$g2 = New-Object System.Windows.Controls.Grid; $g2.Margin = "12"
+$g2r0 = New-Object System.Windows.Controls.RowDefinition; $g2r0.Height = "*"
+$g2r1 = New-Object System.Windows.Controls.RowDefinition; $g2r1.Height = "Auto"
+$g2.RowDefinitions.Add($g2r0); $g2.RowDefinitions.Add($g2r1)
+
+$sv2 = New-Object System.Windows.Controls.ScrollViewer
+$sv2.VerticalScrollBarVisibility = "Auto"
+[System.Windows.Controls.Grid]::SetRow($sv2, 0)
+
+$colsGrid2 = New-Object System.Windows.Controls.Grid
+for ($i=0; $i -lt 2; $i++) {
+    $cd = New-Object System.Windows.Controls.ColumnDefinition; $cd.Width = "*"
+    $colsGrid2.ColumnDefinitions.Add($cd)
+}
+
+$PanelGaming = New-CardPanel $colsGrid2 0 "Gaming & Latency Optimizations" "#F59E0B"
+$ChkMenuDelay = New-TweakCheck $PanelGaming "Instant Menu Show Speed (MenuShowDelay = 0)"
+$ChkWin32Prio = New-TweakCheck $PanelGaming "Optimize CPU Foreground Priority (Win32Priority = 0x1a)"
+$ChkGameTasks = New-TweakCheck $PanelGaming "Boost Gaming GPU & CPU Scheduling (High Priority)"
+$ChkNetThrottle = New-TweakCheck $PanelGaming "Disable Network Throttling & 0% System Reservation"
+$ChkGameBarRemove = New-TweakCheck $PanelGaming "Disable & Completely Remove Xbox Game Bar + Game DVR"
+$ChkGameMode = New-TweakCheck $PanelGaming "Enable Windows Game Mode"
+$ChkMouseAccel = New-TweakCheck $PanelGaming "Disable Mouse Acceleration (1:1 Raw Input)"
+$ChkVisualPerf = New-TweakCheck $PanelGaming "Set Visual Effects to Best Performance"
+$PanelSystem = New-CardPanel $colsGrid2 1 "Essential System & Privacy Tweaks" "#38BDF8"
+$ChkTelemetry = New-TweakCheck $PanelSystem "Disable Windows Telemetry & Data Collection"
+$ChkActivity = New-TweakCheck $PanelSystem "Disable Activity History & Location Tracking"
+$ChkHibernation = New-TweakCheck $PanelSystem "Disable Hibernation (Frees up several GBs of C: drive)"
+$ChkBgApps = New-TweakCheck $PanelSystem "Disable Background Apps"
+$ChkWidgets = New-TweakCheck $PanelSystem "Disable Windows Widgets & Consumer Features"
+$ChkEndTask = New-TweakCheck $PanelSystem "Enable 'End Task' on Taskbar Right-Click (Win 11)"
+$ChkFileExt = New-TweakCheck $PanelSystem "Show File Extensions & Hidden Files in Explorer"
+$ChkDarkTheme = New-TweakCheck $PanelSystem "Enable System-Wide Dark Mode"
+$ChkStickyKeys = New-TweakCheck $PanelSystem "Disable Sticky Keys Prompt"
+$sv2.Content = $colsGrid2
+$g2.Children.Add($sv2) | Out-Null
+$btnBar2 = New-Object System.Windows.Controls.StackPanel
+$btnBar2.Orientation = "Horizontal"
+$btnBar2.HorizontalAlignment = "Right"
+$btnBar2.Margin = "0,10,0,0"
+[System.Windows.Controls.Grid]::SetRow($btnBar2, 1)
+$BtnUndoTweaks = New-StyledButton "Restore Defaults (Undo Selected)" "#DC2626"
+$BtnApplyTweaks = New-StyledButton "Apply Selected Tweaks" "#16A34A"
+$btnBar2.Children.Add($BtnUndoTweaks) | Out-Null
+$btnBar2.Children.Add($BtnApplyTweaks) | Out-Null
+$g2.Children.Add($btnBar2) | Out-Null
+$tab2.Content = $g2
+$tabs.Items.Add($tab2) | Out-Null
+
+==================== TAB 3: POWER PLANS & MAINTENANCE ====================
+
+$tab3 = New-Object System.Windows.Controls.TabItem
+$tab3.Header = "  Power Plans & Maintenance  "
+$g3 = New-Object System.Windows.Controls.Grid; $g3.Margin = "15"
+for ($i=0; $i -lt 2; $i++) {
+$cd = New-Object System.Windows.Controls.ColumnDefinition; $cd.Width = "*"
+$g3.ColumnDefinitions.Add($cd)
+}
+$PanelPower = New-CardPanel $g3 0 "Windows Power Plans Control" "#38BDF8"
+function Add-PowerRow($parent, $title, $enableColor) {
+$lbl = New-Object System.Windows.Controls.TextBlock
+$lbl.Text = $title; $lbl.FontWeight = "SemiBold"; $lbl.Margin = "0,8,0,6"
+$parent.Children.Add($lbl) | Out-Null
+$row = New-Object System.Windows.Controls.StackPanel
+$row.Orientation = "Horizontal"; $row.Margin = "0,0,0,10"
+$b1 = New-StyledButton "Enable & Activate" $enableColor
+$b2 = New-StyledButton "Disable / Delete" "#DC2626"
+$row.Children.Add($b1) | Out-Null
+$row.Children.Add($b2) | Out-Null
+$parent.Children.Add($row) | Out-Null
+return @($b1, $b2)
+}
+$ultBtns = Add-PowerRow $PanelPower "1. Ultimate Performance Plan (Best for Desktop/Gaming)" "#16A34A"
+$highBtns = Add-PowerRow $PanelPower "2. High Performance Plan" "#0284C7"
+$balBtns = Add-PowerRow $PanelPower "3. Balanced Power Plan (Recommended for Laptops)" "#0D9488"
+$PanelMaint = New-CardPanel $g3 1 "System Maintenance & Quick Fixes" "#F59E0B"
+$BtnCleanTemp = New-StyledButton "Clean Temporary & Prefetch Files" "#334155"; $BtnCleanTemp.Margin = "0,6,0,10"
+$BtnRestartExplorer = New-StyledButton "Restart Windows Explorer (Apply UI Tweaks)" "#334155"; $BtnRestartExplorer.Margin = "0,0,0,10"
+$BtnCheckWinget = New-StyledButton "Verify / Repair WinGet Package Manager" "#0284C7"; $BtnCheckWinget.Margin = "0,0,0,10"
+$BtnOpenPowerCpl = New-StyledButton "Open Classic Windows Power Options" "#475569"; $BtnOpenPowerCpl.Margin = "0,0,0,10"
+$PanelMaint.Children.Add($BtnCleanTemp) | Out-Null
+$PanelMaint.Children.Add($BtnRestartExplorer) | Out-Null
+$PanelMaint.Children.Add($BtnCheckWinget) | Out-Null
+$PanelMaint.Children.Add($BtnOpenPowerCpl) | Out-Null
+$tab3.Content = $g3
+$tabs.Items.Add($tab3) | Out-Null
+$mainGrid.Children.Add($tabs) | Out-Null
+
+LIVE LOG CONSOLE
+
+$logBorder = New-Object System.Windows.Controls.Border
+$logBorder.Background = New-Brush "#0D0F12"
+$logBorder.CornerRadius = "6"
+$logBorder.Padding = "10"
+$logBorder.Margin = "0,12,0,0"
+$logBorder.BorderBrush = New-Brush "#2D333F"
+$logBorder.BorderThickness = "1"
+[System.Windows.Controls.Grid]::SetRow($logBorder, 2)
+$logGrid = New-Object System.Windows.Controls.Grid
+$lr0 = New-Object System.Windows.Controls.RowDefinition; $lr0.Height = "Auto"
+$lr1 = New-Object System.Windows.Controls.RowDefinition; $lr1.Height = "*"
+$logGrid.RowDefinitions.Add($lr0); $logGrid.RowDefinitions.Add($lr1)
+$logHeader = New-Object System.Windows.Controls.TextBlock
+$logHeader.Text = "LIVE SYSTEM LOG & DIAGNOSTICS:"
+$logHeader.FontSize = 11; $logHeader.FontWeight = "Bold"
+$logHeader.Foreground = New-Brush "#64748B"; $logHeader.Margin = "0,0,0,4"
+[System.Windows.Controls.Grid]::SetRow($logHeader, 0)
+$TxtLog = New-Object System.Windows.Controls.TextBox
+$TxtLog.Background = New-Brush "#0D0F12"
+$TxtLog.Foreground = New-Brush "#10B981"
+$TxtLog.BorderThickness = "0"
+$TxtLog.FontFamily = New-Object System.Windows.Media.FontFamily("Consolas")
+$TxtLog.FontSize = 12
+$TxtLog.IsReadOnly = $true
+$TxtLog.VerticalScrollBarVisibility = "Auto"
+$TxtLog.TextWrapping = "Wrap"
+[System.Windows.Controls.Grid]::SetRow($TxtLog, 1)
+$logGrid.Children.Add($logHeader) | Out-Null
+$logGrid.Children.Add($TxtLog) | Out-Null
+$logBorder.Child = $logGrid
+$mainGrid.Children.Add($logBorder) | Out-Null
+$win.Content = $mainGrid
+
+==================== LOGIC & FUNCTIONS ====================
+
+function Write-Log([string]$Message) {
+$ts = (Get-Date).ToString("HH:mm:ss")
+$TxtLog.AppendText("[$ts] $Messagern")
 $TxtLog.ScrollToEnd()
 [System.Windows.Forms.Application]::DoEvents() | Out-Null
 }
 Write-Log "Ready. Running with Administrator privileges."
-function Set-RegValue {
-param([string]$Path, [string]$Name, $Value, [string]$Type = "DWord")
-if (-not (Test-Path $Path)) {
-New-Item -Path $Path -Force | Out-Null
-}
+function Set-RegValue([string]$Path, [string]$Name, $Value, [string]$Type = "DWord") {
+if (-not (Test-Path $Path)) { New-Item -Path $Path -Force | Out-Null }
 Set-ItemProperty -Path $Path -Name $Name -Value $Value -Type $Type -Force
 }
 function Ensure-WinGet {
@@ -181,8 +345,9 @@ return $true
 Write-Log "WARNING: WinGet is missing on your PC. Installing WinGet dependencies first..."
 try {
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$vclibsUrl = "https://" + "aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
-$wingetUrl = "https://" + "github.com"
+$proto = "https:" + "//"
+$vclibsUrl = $proto + "aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+$wingetUrl = $proto + "github.com"
 $vclibsPath = "$env:TEMP\VCLibs.appx"
 $wingetPath = "$env:TEMP\WinGet.msixbundle"
 Write-Log "Downloading Microsoft VCLibs dependency..."
@@ -200,28 +365,28 @@ return $false
 }
 } catch {
 Write-Log "ERROR: Failed to auto-install WinGet. Reason: $($_.Exception.Message)"
-Write-Log "TIP: Please check your internet connection or update 'App Installer' from Microsoft Store."
+Write-Log "TIP: Check your internet connection or update 'App Installer' from Microsoft Store."
 return $false
 }
 }
-$window.FindName("BtnSelectAllDotNet").Add_Click({
-foreach ($cb in $window.FindName("PanelDotNet").Children) {
+$BtnSelectAllDotNet.Add_Click({
+foreach ($cb in $PanelDotNet.Children) {
 if ($cb -is [System.Windows.Controls.CheckBox]) { $cb.IsChecked = $true }
 }
 Write-Log "Selected all .NET Framework, .NET 5-9 Desktop Runtimes, Visual C++ & DirectX packages."
 })
-$window.FindName("BtnClearApps").Add_Click({
-foreach ($panelName in @("PanelDotNet", "PanelBrowsers", "PanelTools")) {
-foreach ($cb in $window.FindName($panelName).Children) {
+$BtnClearApps.Add_Click({
+foreach ($p in @($PanelDotNet, $PanelBrowsers, $PanelTools)) {
+foreach ($cb in $p.Children) {
 if ($cb -is [System.Windows.Controls.CheckBox]) { $cb.IsChecked = $false }
 }
 }
 Write-Log "Cleared all application selections."
 })
-$window.FindName("BtnInstallApps").Add_Click({
+$BtnInstallApps.Add_Click({
 $selectedApps = @()
-foreach ($panelName in @("PanelDotNet", "PanelBrowsers", "PanelTools")) {
-foreach ($cb in $window.FindName($panelName).Children) {
+foreach ($p in @($PanelDotNet, $PanelBrowsers, $PanelTools)) {
+foreach ($cb in $p.Children) {
 if ($cb -is [System.Windows.Controls.CheckBox] -and $cb.IsChecked) {
 $selectedApps += [PSCustomObject]@{ Name = $cb.Content; Id = $cb.Tag }
 }
@@ -258,24 +423,18 @@ switch ($proc.ExitCode) {
 -1978335189 { Write-Log "INFO: $($app.Name) is already installed and up to date." }
 -1978335212 { Write-Log "ERROR: Package '$($app.Id)' not found in WinGet repository." }
 -1978335221 { Write-Log "ERROR: Download failed for $($app.Name). Check your internet connection or firewall." }
-default { Write-Log "WARNING: $($app.Name) finished with exit code $($proc.ExitCode). It may require a system reboot or manual setup." }
+default { Write-Log "WARNING: $($app.Name) finished with exit code $($proc.ExitCode)." }
 }
 }
 Write-Log "All selected installation tasks completed!"
-[System.Windows.MessageBox]::Show("Selected software installation process has finished! Check the log window for status details.", "Completed", "OK", "Information")
+[System.Windows.MessageBox]::Show("Selected software installation process has finished!", "Completed", "OK", "Information")
 })
-$window.FindName("BtnApplyTweaks").Add_Click({
+$BtnApplyTweaks.Add_Click({
 Write-Log "Applying selected Registry & Gaming tweaks..."
 try {
-if ($window.FindName("ChkMenuDelay").IsChecked) {
-Set-RegValue "HKCU:\Control Panel\Desktop" "MenuShowDelay" "0" "String"
-Write-Log "Applied: MenuShowDelay set to 0."
-}
-if ($window.FindName("ChkWin32Prio").IsChecked) {
-Set-RegValue "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" "Win32PrioritySeparation" 0x1a "DWord"
-Write-Log "Applied: Win32PrioritySeparation set to 0x1a."
-}
-if ($window.FindName("ChkGameTasks").IsChecked) {
+if ($ChkMenuDelay.IsChecked) { Set-RegValue "HKCU:\Control Panel\Desktop" "MenuShowDelay" "0" "String"; Write-Log "Applied: MenuShowDelay set to 0." }
+if ($ChkWin32Prio.IsChecked) { Set-RegValue "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" "Win32PrioritySeparation" 0x1a "DWord"; Write-Log "Applied: Win32PrioritySeparation set to 0x1a." }
+if ($ChkGameTasks.IsChecked) {
 $gPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games"
 Set-RegValue $gPath "GPU Priority" 8 "DWord"
 Set-RegValue $gPath "Priority" 6 "DWord"
@@ -283,157 +442,132 @@ Set-RegValue $gPath "Scheduling Category" "High" "String"
 Set-RegValue $gPath "SFIO Priority" "High" "String"
 Write-Log "Applied: Gaming GPU Priority (8) & High Scheduling."
 }
-if ($window.FindName("ChkNetThrottle").IsChecked) {
+if ($ChkNetThrottle.IsChecked) {
 $nPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"
 Set-RegValue $nPath "NetworkThrottlingIndex" 0xffffffff "DWord"
 Set-RegValue $nPath "SystemResponsiveness" 0 "DWord"
 Write-Log "Applied: Disabled Network Throttling & set SystemResponsiveness to 0."
 }
-if ($window.FindName("ChkGameBarRemove").IsChecked) {
+if ($ChkGameBarRemove.IsChecked) {
 Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR" "AppCaptureEnabled" 0 "DWord"
 Set-RegValue "HKCU:\System\GameConfigStore" "GameDVR_Enabled" 0 "DWord"
 Set-RegValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" "AllowGameDVR" 0 "DWord"
 Get-AppxPackage -AllUsers Microsoft.XboxGamingOverlay | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
 Write-Log "Applied: Disabled Game DVR & removed Xbox Game Bar package."
 }
-if ($window.FindName("ChkGameMode").IsChecked) {
-Set-RegValue "HKCU:\Software\Microsoft\GameBar" "AutoGameModeEnabled" 1 "DWord"
-Write-Log "Applied: Windows Game Mode enabled."
-}
-if ($window.FindName("ChkMouseAccel").IsChecked) {
+if ($ChkGameMode.IsChecked) { Set-RegValue "HKCU:\Software\Microsoft\GameBar" "AutoGameModeEnabled" 1 "DWord"; Write-Log "Applied: Windows Game Mode enabled." }
+if ($ChkMouseAccel.IsChecked) {
 Set-RegValue "HKCU:\Control Panel\Mouse" "MouseSpeed" "0" "String"
 Set-RegValue "HKCU:\Control Panel\Mouse" "MouseThreshold1" "0" "String"
 Set-RegValue "HKCU:\Control Panel\Mouse" "MouseThreshold2" "0" "String"
 Write-Log "Applied: Mouse Acceleration disabled."
 }
-if ($window.FindName("ChkVisualPerf").IsChecked) {
-Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" "VisualFXSetting" 2 "DWord"
-Write-Log "Applied: Visual Effects set to Best Performance."
-}
-if ($window.FindName("ChkTelemetry").IsChecked) {
-Set-RegValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "AllowTelemetry" 0 "DWord"
-Write-Log "Applied: Windows Telemetry disabled."
-}
-if ($window.FindName("ChkActivity").IsChecked) {
+if ($ChkVisualPerf.IsChecked) { Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" "VisualFXSetting" 2 "DWord"; Write-Log "Applied: Visual Effects set to Best Performance." }
+if ($ChkTelemetry.IsChecked) { Set-RegValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "AllowTelemetry" 0 "DWord"; Write-Log "Applied: Windows Telemetry disabled." }
+if ($ChkActivity.IsChecked) {
 Set-RegValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" "EnableActivityFeed" 0 "DWord"
 Set-RegValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" "DisableLocation" 1 "DWord"
 Write-Log "Applied: Activity History & Location Tracking disabled."
 }
-if ($window.FindName("ChkHibernation").IsChecked) {
-powercfg.exe /hibernate off
-Write-Log "Applied: Hibernation disabled."
-}
-if ($window.FindName("ChkBgApps").IsChecked) {
-Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" "GlobalUserDisabled" 1 "DWord"
-Write-Log "Applied: Background Apps disabled."
-}
-if ($window.FindName("ChkWidgets").IsChecked) {
+if ($ChkHibernation.IsChecked) { powercfg.exe /hibernate off; Write-Log "Applied: Hibernation disabled." }
+if ($ChkBgApps.IsChecked) { Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" "GlobalUserDisabled" 1 "DWord"; Write-Log "Applied: Background Apps disabled." }
+if ($ChkWidgets.IsChecked) {
 Set-RegValue "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" "AllowNewsAndInterests" 0 "DWord"
 Set-RegValue "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" "EnableFeeds" 0 "DWord"
 Write-Log "Applied: Widgets & News Feeds disabled."
 }
-if ($window.FindName("ChkEndTask").IsChecked) {
-Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" "TaskbarEndTask" 1 "DWord"
-Write-Log "Applied: End Task on Taskbar right-click enabled."
-}
-if ($window.FindName("ChkFileExt").IsChecked) {
+if ($ChkEndTask.IsChecked) { Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" "TaskbarEndTask" 1 "DWord"; Write-Log "Applied: End Task on Taskbar right-click enabled." }
+if ($ChkFileExt.IsChecked) {
 Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "HideFileExt" 0 "DWord"
 Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "Hidden" 1 "DWord"
 Write-Log "Applied: File Extensions & Hidden Files shown."
 }
-if ($window.FindName("ChkDarkTheme").IsChecked) {
+if ($ChkDarkTheme.IsChecked) {
 $tPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
 Set-RegValue $tPath "AppsUseLightTheme" 0 "DWord"
 Set-RegValue $tPath "SystemUsesLightTheme" 0 "DWord"
 Write-Log "Applied: Windows Dark Mode enabled."
 }
-if ($window.FindName("ChkStickyKeys").IsChecked) {
-Set-RegValue "HKCU:\Control Panel\Accessibility\StickyKeys" "Flags" "506" "String"
-Write-Log "Applied: Sticky Keys disabled."
-}
+if ($ChkStickyKeys.IsChecked) { Set-RegValue "HKCU:\Control Panel\Accessibility\StickyKeys" "Flags" "506" "String"; Write-Log "Applied: Sticky Keys disabled." }
 Write-Log "SUCCESS: All selected tweaks have been applied!"
-[System.Windows.MessageBox]::Show("Selected tweaks applied successfully! Restart your PC or Explorer for all changes to take full effect.", "Success", "OK", "Information")
+[System.Windows.MessageBox]::Show("Selected tweaks applied successfully!", "Success", "OK", "Information")
 } catch {
 Write-Log "ERROR applying tweaks: $($_.Exception.Message)"
 }
 })
-$window.FindName("BtnUndoTweaks").Add_Click({
+$BtnUndoTweaks.Add_Click({
 Write-Log "Restoring default Windows settings for selected tweaks..."
-if ($window.FindName("ChkMenuDelay").IsChecked) { Set-RegValue "HKCU:\Control Panel\Desktop" "MenuShowDelay" "400" "String" }
-if ($window.FindName("ChkWin32Prio").IsChecked) { Set-RegValue "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" "Win32PrioritySeparation" 2 "DWord" }
-if ($window.FindName("ChkNetThrottle").IsChecked) {
+if ($ChkMenuDelay.IsChecked) { Set-RegValue "HKCU:\Control Panel\Desktop" "MenuShowDelay" "400" "String" }
+if ($ChkWin32Prio.IsChecked) { Set-RegValue "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" "Win32PrioritySeparation" 2 "DWord" }
+if ($ChkNetThrottle.IsChecked) {
 Set-RegValue "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "NetworkThrottlingIndex" 10 "DWord"
 Set-RegValue "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "SystemResponsiveness" 20 "DWord"
 }
-if ($window.FindName("ChkGameBarRemove").IsChecked) {
+if ($ChkGameBarRemove.IsChecked) {
 Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR" "AppCaptureEnabled" 1 "DWord"
 Set-RegValue "HKCU:\System\GameConfigStore" "GameDVR_Enabled" 1 "DWord"
 Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowGameDVR" -ErrorAction SilentlyContinue
 }
-if ($window.FindName("ChkMouseAccel").IsChecked) {
+if ($ChkMouseAccel.IsChecked) {
 Set-RegValue "HKCU:\Control Panel\Mouse" "MouseSpeed" "1" "String"
 Set-RegValue "HKCU:\Control Panel\Mouse" "MouseThreshold1" "6" "String"
 Set-RegValue "HKCU:\Control Panel\Mouse" "MouseThreshold2" "10" "String"
 }
-if ($window.FindName("ChkHibernation").IsChecked) { powercfg.exe /hibernate on }
-if ($window.FindName("ChkBgApps").IsChecked) { Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" "GlobalUserDisabled" 0 "DWord" }
-if ($window.FindName("ChkWidgets").IsChecked) { Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -ErrorAction SilentlyContinue }
-if ($window.FindName("ChkFileExt").IsChecked) { Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "HideFileExt" 1 "DWord" }
+if ($ChkHibernation.IsChecked) { powercfg.exe /hibernate on }
+if ($ChkBgApps.IsChecked) { Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" "GlobalUserDisabled" 0 "DWord" }
+if ($ChkWidgets.IsChecked) { Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -ErrorAction SilentlyContinue }
+if ($ChkFileExt.IsChecked) { Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "HideFileExt" 1 "DWord" }
 Write-Log "SUCCESS: Selected tweaks restored to Windows defaults."
 })
-$window.FindName("BtnUltEnable").Add_Click({
+$ultBtns[0].Add_Click({
 powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 | Out-Null
-$guid = (powercfg -list | Select-String "Ultimate Performance").ToString().Split()
+$guid = (powercfg -list | Select-String "Ultimate Performance").ToString().Split()[3]
 if ($guid) { powercfg -setactive $guid; Write-Log "SUCCESS: Ultimate Performance Power Plan enabled & activated." }
 })
-$window.FindName("BtnUltDisable").Add_Click({
+$ultBtns[1].Add_Click({
 powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
 $schemes = powercfg -list | Select-String "Ultimate Performance"
-foreach ($s in $schemes) { $g = $s.ToString().Split(); powercfg -delete $g }
+foreach ($s in $schemes) { $g = $s.ToString().Split()[3]; powercfg -delete $g }
 Write-Log "SUCCESS: Ultimate Performance Plan disabled & removed (Switched to Balanced)."
 })
-$window.FindName("BtnHighEnable").Add_Click({
+$highBtns[0].Add_Click({
 powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c | Out-Null
 powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
 Write-Log "SUCCESS: High Performance Power Plan enabled & activated."
 })
-$window.FindName("BtnHighDisable").Add_Click({
+$highBtns[1].Add_Click({
 powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
 powercfg -delete 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
 Write-Log "SUCCESS: High Performance Plan disabled."
 })
-$window.FindName("BtnBalEnable").Add_Click({
+$balBtns[0].Add_Click({
 powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e | Out-Null
 powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
 Write-Log "SUCCESS: Balanced Power Plan enabled & activated."
 })
-$window.FindName("BtnBalDisable").Add_Click({
+$balBtns[1].Add_Click({
 powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
 powercfg -delete 381b4222-f694-41f0-9685-ff5bb260df2e 2>$null
 Write-Log "SUCCESS: Balanced Power Plan disabled."
 })
-$window.FindName("BtnCreateRestore").Add_Click({
+$BtnCreateRestore.Add_Click({
 Write-Log "Creating System Restore Point..."
 Enable-ComputerRestore -Drive "C:" -ErrorAction SilentlyContinue
 Checkpoint-Computer -Description "ProWinOptimizer_Backup" -RestorePointType "MODIFY_SETTINGS" -ErrorAction SilentlyContinue
 Write-Log "SUCCESS: System Restore Point created."
 })
-$window.FindName("BtnCleanTemp").Add_Click({
+$BtnCleanTemp.Add_Click({
 Write-Log "Cleaning Windows Temp, User Temp & Prefetch folders..."
 Remove-Item -Path "$env:TEMP*" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "C:\Windows\Temp*" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "C:\Windows\Prefetch*" -Recurse -Force -ErrorAction SilentlyContinue
 Write-Log "SUCCESS: Temporary junk files cleaned!"
 })
-$window.FindName("BtnRestartExplorer").Add_Click({
+$BtnRestartExplorer.Add_Click({
 Write-Log "Restarting Windows Explorer..."
 Stop-Process -Name explorer -Force
 Write-Log "SUCCESS: Windows Explorer restarted."
 })
-$window.FindName("BtnCheckWinget").Add_Click({
-Ensure-WinGet | Out-Null
-})
-$window.FindName("BtnOpenPowerCpl").Add_Click({
-Start-Process "powercfg.cpl"
-})
-$window.ShowDialog() | Out-Null
+$BtnCheckWinget.Add_Click({ Ensure-WinGet | Out-Null })
+$BtnOpenPowerCpl.Add_Click({ Start-Process "powercfg.cpl" })
+$win.ShowDialog() | Out-Null
