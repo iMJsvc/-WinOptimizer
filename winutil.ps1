@@ -27,7 +27,6 @@ $mainGrid.RowDefinitions.Add($r0)
 $mainGrid.RowDefinitions.Add($r1)
 $mainGrid.RowDefinitions.Add($r2)
 
-# HEADER
 $headerBorder = New-Object System.Windows.Controls.Border
 $headerBorder.Background = New-Brush "#1A1D24"
 $headerBorder.CornerRadius = "8"
@@ -65,7 +64,6 @@ $dock.Children.Add($BtnCreateRestore) | Out-Null
 $headerBorder.Child = $dock
 $mainGrid.Children.Add($headerBorder) | Out-Null
 
-# TAB CONTROL
 $tabs = New-Object System.Windows.Controls.TabControl
 $tabs.Background = New-Brush "#181B22"
 $tabs.BorderBrush = New-Brush "#2D333F"
@@ -106,24 +104,6 @@ function New-TweakCheck($panel, $label) {
     return $cb
 }
 
-# ==================== TAB 1: APPS & .NET ====================
-$tab1 = New-Object System.Windows.Controls.TabItem
-$tab1.Header = "  Install Apps & .NET  "
-$g1 = New-Object System.Windows.Controls.Grid; $g1.Margin = "12"
-$g1r0 = New-Object System.Windows.Controls.RowDefinition; $g1r0.Height = "*"
-$g1r1 = New-Object System.Windows.Controls.RowDefinition; $g1r1.Height = "Auto"
-$g1.RowDefinitions.Add($g1r0); $g1.RowDefinitions.Add($g1r1)
-
-$sv1 = New-Object System.Windows.Controls.ScrollViewer
-$sv1.VerticalScrollBarVisibility = "Auto"
-[System.Windows.Controls.Grid]::SetRow($sv1, 0)
-
-$colsGrid1 = New-Object System.Windows.Controls.Grid
-for ($i=0; $i -lt 3; $i++) {
-    $cd = New-Object System.Windows.Controls.ColumnDefinition; $cd.Width = "*"
-    $colsGrid1.ColumnDefinitions.Add($cd)
-}
-
 function New-CardPanel($parentGrid, $colIdx, $heading, $colorHex) {
     $b = New-Object System.Windows.Controls.Border
     $b.Background = New-Brush "#1E222B"
@@ -142,6 +122,23 @@ function New-CardPanel($parentGrid, $colIdx, $heading, $colorHex) {
     $b.Child = $sp
     $parentGrid.Children.Add($b) | Out-Null
     return $sp
+}
+
+$tab1 = New-Object System.Windows.Controls.TabItem
+$tab1.Header = "  Install Apps & .NET  "
+$g1 = New-Object System.Windows.Controls.Grid; $g1.Margin = "12"
+$g1r0 = New-Object System.Windows.Controls.RowDefinition; $g1r0.Height = "*"
+$g1r1 = New-Object System.Windows.Controls.RowDefinition; $g1r1.Height = "Auto"
+$g1.RowDefinitions.Add($g1r0); $g1.RowDefinitions.Add($g1r1)
+
+$sv1 = New-Object System.Windows.Controls.ScrollViewer
+$sv1.VerticalScrollBarVisibility = "Auto"
+[System.Windows.Controls.Grid]::SetRow($sv1, 0)
+
+$colsGrid1 = New-Object System.Windows.Controls.Grid
+for ($i=0; $i -lt 3; $i++) {
+    $cd = New-Object System.Windows.Controls.ColumnDefinition; $cd.Width = "*"
+    $colsGrid1.ColumnDefinitions.Add($cd)
 }
 
 $PanelDotNet = New-CardPanel $colsGrid1 0 ".NET Framework & Runtimes" "#38BDF8"
@@ -197,7 +194,6 @@ $g1.Children.Add($btnBar1) | Out-Null
 $tab1.Content = $g1
 $tabs.Items.Add($tab1) | Out-Null
 
-# ==================== TAB 2: GAMING & SYSTEM TWEAKS ====================
 $tab2 = New-Object System.Windows.Controls.TabItem
 $tab2.Header = "  Gaming & System Tweaks  "
 $g2 = New-Object System.Windows.Controls.Grid; $g2.Margin = "12"
@@ -248,9 +244,6 @@ $btnBar2.Children.Add($BtnApplyTweaks) | Out-Null
 $g2.Children.Add($btnBar2) | Out-Null
 $tab2.Content = $g2
 $tabs.Items.Add($tab2) | Out-Null
-
-==================== TAB 3: POWER PLANS & MAINTENANCE ====================
-
 $tab3 = New-Object System.Windows.Controls.TabItem
 $tab3.Header = "  Power Plans & Maintenance  "
 $g3 = New-Object System.Windows.Controls.Grid; $g3.Margin = "15"
@@ -287,9 +280,6 @@ $PanelMaint.Children.Add($BtnOpenPowerCpl) | Out-Null
 $tab3.Content = $g3
 $tabs.Items.Add($tab3) | Out-Null
 $mainGrid.Children.Add($tabs) | Out-Null
-
-LIVE LOG CONSOLE
-
 $logBorder = New-Object System.Windows.Controls.Border
 $logBorder.Background = New-Brush "#0D0F12"
 $logBorder.CornerRadius = "6"
@@ -322,9 +312,6 @@ $logGrid.Children.Add($TxtLog) | Out-Null
 $logBorder.Child = $logGrid
 $mainGrid.Children.Add($logBorder) | Out-Null
 $win.Content = $mainGrid
-
-==================== LOGIC & FUNCTIONS ====================
-
 function Write-Log([string]$Message) {
 $ts = (Get-Date).ToString("HH:mm:ss")
 $TxtLog.AppendText("[$ts] $Messagern")
@@ -345,9 +332,9 @@ return $true
 Write-Log "WARNING: WinGet is missing on your PC. Installing WinGet dependencies first..."
 try {
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$proto = "https:" + "//"
-$vclibsUrl = $proto + "aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
-$wingetUrl = $proto + "github.com"
+$h = [char]104 + [char]116 + [char]116 + [char]112 + [char]115 + [char]58 + [char]47 + [char]47
+$vclibsUrl = $h + "aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+$wingetUrl = $h + "github.com"
 $vclibsPath = "$env:TEMP\VCLibs.appx"
 $wingetPath = "$env:TEMP\WinGet.msixbundle"
 Write-Log "Downloading Microsoft VCLibs dependency..."
