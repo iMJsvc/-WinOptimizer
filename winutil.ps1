@@ -1,18 +1,10 @@
-#Requires -RunAsAdministrator
-<#
-.SYNOPSIS
-    Pro Windows Optimizer, Debloater & Smart App Installer
-#>
-
-# Auto-elevate to Administrator if not already running as Admin
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
     exit
 }
 
-Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
+Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Windows.Forms
 
-# ==================== XAML UI DESIGN ====================
 [xml]$xaml = @"
 <Window xmlns="http://microsoft.com"
         xmlns:x="http://microsoft.com"
@@ -65,7 +57,6 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
             <RowDefinition Height="155"/>
         </Grid.RowDefinitions>
 
-        <!-- HEADER -->
         <Border Grid.Row="0" Background="#1A1D24" CornerRadius="8" Padding="15" Margin="0,0,0,12" BorderBrush="#2A2F3A" BorderThickness="1">
             <DockPanel>
                 <StackPanel Orientation="Vertical">
@@ -76,10 +67,7 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
             </DockPanel>
         </Border>
 
-        <!-- MAIN TABS -->
         <TabControl Grid.Row="1" Background="#181B22" BorderBrush="#2D333F" BorderThickness="1">
-            
-            <!-- TAB 1: APPS & .NET INSTALLER -->
             <TabItem Header="Install Apps &amp; .NET">
                 <Grid Margin="12">
                     <Grid.RowDefinitions>
@@ -95,7 +83,6 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- COLUMN 1: .NET & RUNTIMES -->
                             <Border Grid.Column="0" Background="#1E222B" CornerRadius="6" Padding="12" Margin="0,0,6,0">
                                 <StackPanel Name="PanelDotNet">
                                     <TextBlock Text=".NET Framework &amp; Runtimes" FontSize="15" FontWeight="Bold" Foreground="#38BDF8" Margin="0,0,0,8"/>
@@ -112,7 +99,6 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
                                 </StackPanel>
                             </Border>
 
-                            <!-- COLUMN 2: BROWSERS & COMMUNICATION -->
                             <Border Grid.Column="1" Background="#1E222B" CornerRadius="6" Padding="12" Margin="6,0">
                                 <StackPanel Name="PanelBrowsers">
                                     <TextBlock Text="Browsers &amp; Social" FontSize="15" FontWeight="Bold" Foreground="#A78BFA" Margin="0,0,0,8"/>
@@ -127,7 +113,6 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
                                 </StackPanel>
                             </Border>
 
-                            <!-- COLUMN 3: GAMING & ESSENTIAL TOOLS -->
                             <Border Grid.Column="2" Background="#1E222B" CornerRadius="6" Padding="12" Margin="6,0,0,0">
                                 <StackPanel Name="PanelTools">
                                     <TextBlock Text="Gaming &amp; Utilities" FontSize="15" FontWeight="Bold" Foreground="#34D399" Margin="0,0,0,8"/>
@@ -152,21 +137,31 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
                         <Button Name="BtnInstallApps" Content="Install Selected Applications" Background="#0284C7" Padding="20,9"/>
                     </StackPanel>
                 </Grid>
+            </TabItem>
+
+            <TabItem Header="Gaming &amp; System Tweaks">
+                <Grid Margin="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+</Grid.ColumnDefinitions>
 "@
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 $window = [Windows.Markup.XamlReader]::Load($reader)
-
-==================== HELPER FUNCTIONS ====================
-
 $TxtLog = $window.FindName("TxtLog")
 function Write-Log {
 param([string]$Message)
 $timestamp = (Get-Date).ToString("HH:mm:ss")
 $TxtLog.AppendText("[$timestamp] $Messagern")
 $TxtLog.ScrollToEnd()
-[System.Windows.Forms.Application]::DoEvents() 2>$null
+[System.Windows.Forms.Application]::DoEvents() | Out-Null
 }
-Add-Type -AssemblyName System.Windows.Forms
 Write-Log "Ready. Running with Administrator privileges."
 function Set-RegValue {
 param([string]$Path, [string]$Name, $Value, [string]$Type = "DWord")
@@ -207,9 +202,6 @@ Write-Log "TIP: Please check your internet connection or update 'App Installer' 
 return $false
 }
 }
-
-==================== APP INSTALLER LOGIC ====================
-
 $window.FindName("BtnSelectAllDotNet").Add_Click({
 foreach ($cb in $window.FindName("PanelDotNet").Children) {
 if ($cb -is [System.Windows.Controls.CheckBox]) { $cb.IsChecked = $true }
@@ -237,7 +229,6 @@ if ($selectedApps.Count -eq 0) {
 [System.Windows.MessageBox]::Show("Please select at least one application or .NET runtime first!", "No Selection", "OK", "Warning")
 return
 }
-# Handle .NET 3.5 separately via Windows Optional Feature
 $normalApps = @()
 foreach ($app in $selectedApps) {
 if ($app.Id -eq "DOTNET35") {
@@ -271,9 +262,6 @@ default { Write-Log "WARNING: $($app.Name) finished with exit code $($proc.ExitC
 Write-Log "All selected installation tasks completed!"
 [System.Windows.MessageBox]::Show("Selected software installation process has finished! Check the log window for status details.", "Completed", "OK", "Information")
 })
-
-==================== REGISTRY & GAMING TWEAKS LOGIC ====================
-
 $window.FindName("BtnApplyTweaks").Add_Click({
 Write-Log "Applying selected Registry & Gaming tweaks..."
 try {
@@ -391,12 +379,6 @@ if ($window.FindName("ChkWidgets").IsChecked) { Remove-ItemProperty -Path "HKLM:
 if ($window.FindName("ChkFileExt").IsChecked) { Set-RegValue "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "HideFileExt" 1 "DWord" }
 Write-Log "SUCCESS: Selected tweaks restored to Windows defaults."
 })
-
-==================== POWER PLANS & MAINTENANCE LOGIC ====================
-
-
-Ultimate Performance (e9a42b02-d5df-448d-aa00-03f14749eb61)
-
 $window.FindName("BtnUltEnable").Add_Click({
 powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 | Out-Null
 $guid = (powercfg -list | Select-String "Ultimate Performance").ToString().Split()
@@ -408,9 +390,6 @@ $schemes = powercfg -list | Select-String "Ultimate Performance"
 foreach ($s in $schemes) { $g = $s.ToString().Split(); powercfg -delete $g }
 Write-Log "SUCCESS: Ultimate Performance Plan disabled & removed (Switched to Balanced)."
 })
-
-High Performance (8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
-
 $window.FindName("BtnHighEnable").Add_Click({
 powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c | Out-Null
 powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
@@ -421,9 +400,6 @@ powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
 powercfg -delete 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
 Write-Log "SUCCESS: High Performance Plan disabled."
 })
-
-Balanced Plan (381b4222-f694-41f0-9685-ff5bb260df2e)
-
 $window.FindName("BtnBalEnable").Add_Click({
 powercfg -duplicatescheme 381b4222-f694-41f0-9685-ff5bb260df2e | Out-Null
 powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
@@ -434,9 +410,6 @@ powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
 powercfg -delete 381b4222-f694-41f0-9685-ff5bb260df2e 2>$null
 Write-Log "SUCCESS: Balanced Power Plan disabled."
 })
-
-Maintenance Buttons
-
 $window.FindName("BtnCreateRestore").Add_Click({
 Write-Log "Creating System Restore Point..."
 Enable-ComputerRestore -Drive "C:" -ErrorAction SilentlyContinue
